@@ -1,0 +1,21 @@
+# node stuff
+node_modules/
+client/node_modules/
+
+# Environment variables
+.env
+
+# builds/output
+dist/
+build/
+
+# logs
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# vscode ignore
+.vscode/
