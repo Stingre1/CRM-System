@@ -24,12 +24,12 @@ const app = express();
 connectDB();
 
 // Setup static folder for frontend assets (assuming client folder is in the root of your project)
-app.use(express.static(path.join(__dirname, 'client')));
+app.use(express.static(path.join(__dirname, '../client')));
 
 // Middleware setup
 app.use(logger); // Log all requests
 app.use(express.json()); // Parse incoming JSON requests
-
+app.use(express.urlencoded( {extended: false}));
 // Routes
 app.use('/api/auth', router); // Assuming your routes are prefixed with '/api/auth'
 
