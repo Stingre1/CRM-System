@@ -6,9 +6,10 @@ import dotenv from 'dotenv';
 import express from 'express';
 import colors from 'colors';
 import logger from './middleware/logger.js';
-import router from './routes/authRoutes.js';
-import authenticateToken from './middleware/authMiddleware.js';
-import errorHandler from './middleware/errorHandler.js';
+import authRoutes from './routes/authRoutes.js';
+import leadRoutes from './routes/leadRoutes.js';
+import authenticateJWT from './middleware/authMiddleware.js';
+import authorizeRoles from './middleware/authorizeRoles.js';
 
 // Current path stuff
 const __filename = url.fileURLToPath(import.meta.url);
@@ -27,16 +28,19 @@ connectDB();
 app.use(express.static(path.join(__dirname, '../client')));
 
 // Middleware setup
-app.use(logger); // Log all requests
+app.use(logger); // Log all incoming requests (global middleware)
+
 app.use(express.json()); // Parse incoming JSON requests
 app.use(express.urlencoded( {extended: false}));
+
 // Routes
-app.use('/api/auth', router); // Assuming your routes are prefixed with '/api/auth'
+app.use('/api/auth', authRoutes);
 
-app.use(authenticateToken);
+// Protected Route (auth required)
+app.use('/api', authenticateJWT, authorizeRoles, leadRoutes);
 
-// Error handler
-app.use(errorHandler);
+
+app.use(authenticateJWT);
 
 // Start the server
 app.listen(port, () => {
