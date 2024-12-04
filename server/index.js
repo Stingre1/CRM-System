@@ -37,7 +37,7 @@ app.use(express.urlencoded( {extended: false}));
 app.use('/api/auth', authRoutes);
 
 // Protected Route (auth required)
-app.use('/api', authenticateJWT, authorizeRoles, leadRoutes);
+app.use('/api', authenticateJWT, authorizeRoles, leadRoutes); // create new lead route
 
 
 app.use(authenticateJWT);

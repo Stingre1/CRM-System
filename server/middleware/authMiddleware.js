@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 
-const authenticateToken = (req, res, next) => {
+const authenticateJWT = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1]; // Extract Bearer token
 
   if (!token) {
@@ -17,4 +17,4 @@ const authenticateToken = (req, res, next) => {
 
 };
 
-export default authenticateToken;
+export default authenticateJWT;
