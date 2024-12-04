@@ -1,5 +1,6 @@
 import { MongoClient, ServerApiVersion } from 'mongodb';
 import dotenv from 'dotenv'
+import colors from 'colors'
 
 
 dotenv.config()
@@ -22,9 +23,9 @@ const connectDB = async () => {
     await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    console.log("Pinged. Successfully connected to MongoDB!"['green']);
   } catch (error) {
-    console.error("Error connecting to MongoDB:", error.message);
+    console.error(`Error connecting to MongoDB: ${error.message}`['red']);
   } finally {
     // Ensures that the client will close when you finish/error 
     await client.close();
