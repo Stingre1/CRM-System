@@ -7,9 +7,10 @@ import express from 'express';
 import colors from 'colors';
 import logger from './middleware/logger.js';
 import authRoutes from './routes/authRoutes.js';
-import leadRoutes from './routes/leadRoutes.js';
+// import leadRoutes from './routes/leadRoutes.js';
 import authenticateJWT from './middleware/authMiddleware.js';
 import authorizeRoles from './middleware/authorizeRoles.js';
+import userRoutes from './routes/userRoutes.js'
 
 // Current path stuff
 const __filename = url.fileURLToPath(import.meta.url);
@@ -37,12 +38,13 @@ app.use(express.urlencoded( {extended: false}));
 app.use('/api/auth', authRoutes);
 
 // Protected Route (auth required)
-app.use('/api', authenticateJWT, authorizeRoles, leadRoutes); // create new lead route
-
-
-app.use(authenticateJWT);
+// app.use('/api', authenticateJWT, authorizeRoles, leadRoutes);
 
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`['green']);
 });
+
+
+// Add the user routes
+app.use('/api/users', userRoutes);
