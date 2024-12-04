@@ -5,6 +5,7 @@ import connectDB from './config/db.js';
 import dotenv from 'dotenv'
 import express from 'express';
 import colors from 'colors';
+import logger from './middleware/logger.js';
 
 //current path stuff
 const __filename =  url.fileURLToPath(import.meta.url);
@@ -21,6 +22,9 @@ app.listen(port, () => {
 })
 
 connectDB()
+
+app.use(logger)
+app.use(express.json());
 
 //setup static folder (middleware)
 app.use(express.static(path.join(__dirname, 'client')))
