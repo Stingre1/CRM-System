@@ -10,13 +10,13 @@ const registerUser = async (req, res) => {
 
   // Validation
   if (!name || !email || !password || !role) {
-    return res.status(400).json({ message: 'All fields are required.' });
+    return res.status(400).json({ message: `All fields are required.`});
   }
 
   try {
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists.' });
+      return res.status(400).json({ message: "Username already exists."});
     }
 
     const saltRounds = 10;
@@ -33,8 +33,7 @@ const registerUser = async (req, res) => {
 
     res.status(201).json({ message: 'User registered successfully.' });
   } catch (err) {
-    console.error(`Error in registration: ${err.message}`);
-    res.status(500).json({ message: 'Internal server error.' });
+    next(err);
   }
 };
 
@@ -42,7 +41,7 @@ const login = async (req, res) => {
   const { usernameOrEmail, password } = req.body;
 
   if (!usernameOrEmail || !password) {
-    return res.status(400).json({ message: 'Username/email and password are required.' });
+    return res.status(400).json({ message: "Username/Email and Password fields are required."});
   }
 
   try {
@@ -51,7 +50,7 @@ const login = async (req, res) => {
       : await User.findOne({ username: usernameOrEmail });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
+        return res.status(401).json({ message: "Invalid credentials."});
     }
 
     if (!process.env.JWT_SECRET_KEY) {
@@ -67,8 +66,7 @@ const login = async (req, res) => {
 
     res.status(200).json({ message: 'Logged in successfully.', token });
   } catch (err) {
-    console.error(`Error in login: ${err.message}`);
-    res.status(500).json({ message: 'Server error.' });
+    return(err)
   }
 };
 

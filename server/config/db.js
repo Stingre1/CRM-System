@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 import colors from 'colors'
 
 
-dotenv.config()
+dotenv.config();
 const uri = process.env.MONGO_URI;
 
 

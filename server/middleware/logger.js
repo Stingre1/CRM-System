@@ -17,7 +17,7 @@ const logger = (req, res, next) => {
     const timestampColor = 'gray';
     const clientIpColor = 'cyan';
     
-    console.log(`[${timestamp[`${timestampColor}`]}] ${method[`${methodColor}`]} request to ${url} from ${clientIp[`${clientIpColor}`]}`);
+    console.log(`[${timestamp[`${timestampColor}`]}] ${method[`${methodColor}`]} request to ${url} from ${clientIp[`${clientIpColor}`]}.`);
     next();
 };
 
