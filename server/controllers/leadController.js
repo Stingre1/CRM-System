@@ -68,4 +68,4 @@ const assignLead = async (req, res) => {
 
 
 
-export { getAllLeads, getLeadById,  }
+export { getAllLeads, getLeadById, assignLead}

@@ -1,13 +1,22 @@
-import express from 'express'
-import { } from '../controllers/leadControllers.js'
-import authenticateJWT from '../middleware/authMiddleware.js'
-import authorizeRoles from '../middleware/authorizeRoles.js'
+import express from 'express';
+import {
+  getAllLeads,
+  getLeadById,
+  createLead,
+  updateLead,
+  deleteLead,
+  assignLead,
+  searchLeads,
+} from '../controllers/leadController.js';
 
 const router = express.Router();
 
-//get all leads
-router.get('/leads',
-        authenticateJWT,
-        authorizeRoles,
-        
-    )
+router.get('/', getAllLeads);
+router.get('/:id', getLeadById);
+router.post('/', createLead);
+router.put('/:id', updateLead);
+router.delete('/:id', deleteLead);
+router.put('/:leadId/assign', assignLead);
+router.get('/search', searchLeads);
+
+export default router;
