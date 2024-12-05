@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import colors from 'colors';
 
-dotenv.config();
+dotenv.config({path: path.join(__dirname)});
 const uri = process.env.MONGO_URI;
 
 const connectDB = async () => {

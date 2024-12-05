@@ -16,7 +16,7 @@ import userRoutes from './routes/userRoutes.js'
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config();
+dotenv.config({path: path.join(__dirname)});
 
 const port = process.env.PORT || 5000; // Set default port in case it's not in .env
 
@@ -40,11 +40,11 @@ app.use('/api/auth', authRoutes);
 // Protected Route (auth required)
 // app.use('/api', authenticateJWT, authorizeRoles, leadRoutes);
 
+app.use('/api/users', userRoutes); // Add the user routes
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on port: ${port}`['green']);
 });
 
 
-// Add the user routes
-app.use('/api/users', userRoutes);

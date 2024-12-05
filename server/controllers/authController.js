@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import dotenv from 'dotenv';
 
-dotenv.config();
+dotenv.config({path: path.join(__dirname)});
 
 const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;

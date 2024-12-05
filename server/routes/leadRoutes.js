@@ -6,4 +6,8 @@ import authorizeRoles from '../middleware/authorizeRoles.js'
 const router = express.Router();
 
 //get all leads
-router.get('/leads', authenticateJWT, authorizeRoles)
+router.get('/leads',
+        authenticateJWT,
+        authorizeRoles,
+        
+    )

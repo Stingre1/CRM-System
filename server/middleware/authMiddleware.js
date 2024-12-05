@@ -4,7 +4,7 @@ const authenticateJWT = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1]; // Extract Bearer token
 
   if (!token) {
-    return res.status(401).json({ message: 'Access denied. No token provided.' });
+    return res.status(401).json({ message: 'Access denied. Missing token.' });
   }
 
   try {
@@ -12,7 +12,7 @@ const authenticateJWT = (req, res, next) => {
     req.user = decoded; // Attach user data to request
     next();
   } catch (err) {
-    res.status(403).json({ message: 'Invalid or expired token.' });
+    res.status(403).json({ message: 'Invalid or expired token. Cannot authenticate user.' });
   }
 
 };
