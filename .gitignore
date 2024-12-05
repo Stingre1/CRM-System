@@ -23,4 +23,9 @@ Thumbs.db
 # documentation stuff
 screenshots-for-documentation
 
-CRM-System/CRM-System
+# React Native
+.expo/
+
+# Dependency directories
+/.pnp/
+/.pnp.js
