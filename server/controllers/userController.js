@@ -1,8 +1,8 @@
 import User from '../models/userModel.js';
 
 const editUser = async (req, res) => {
-  const { userId } = req.params;
-  const { name, email, role } = req.body;
+  const { userId } = req.params.userId;
+  const { ...fields } = req.body;
 
     // Handle empty string fields by explicitly setting them if necessary
     const updateFields = {};
