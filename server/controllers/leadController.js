@@ -19,10 +19,10 @@ const getAllLeads = async (req, res) => {
 };
 
 // @desc Get a lead by ID
-// @method GET api/leads/:id
+// @method GET api/leads/:leadId
 const getLeadById = async (req, res) => {
-  const id = req.params.id;
-
+  const id = req.params.leadId;
+  console.log(id);
   try {
     const lead = await Lead.findById(id);
     if (!lead) {
@@ -41,10 +41,10 @@ const getLeadById = async (req, res) => {
 };
 
 // @desc Create a new lead
-// @method POST api/leads
+// @method POST api/leads/
 const createLead = async (req, res) => {
   const { leadName, phoneNumber, email, leadDetails } = req.body;
-  console.log(leadName, phoneNumber, email, leadDetails);
+  // console.log(`${leadName}, ${phoneNumber}, ${email}, ${leadDetails}`);
   try {
     const lead = new Lead({
       leadName,
@@ -52,6 +52,7 @@ const createLead = async (req, res) => {
       email,
       leadDetails,
     });
+
     await lead.save();
 
     res.status(201).json({
@@ -67,9 +68,9 @@ const createLead = async (req, res) => {
 };
 
 // @desc Update a lead's details
-// @method PUT api/leads/:id
+// @method PUT api/leads/:leadId
 const updateLead = async (req, res) => {
-  const id = req.params.id;
+  const id = req.params.leadId;
   const updates = req.body;
 
   try {
@@ -106,7 +107,7 @@ const updateLead = async (req, res) => {
 // @desc Delete a lead
 // @method DELETE api/leads/:id
 const deleteLead = async (req, res) => {
-  const id = req.params.id;
+  const id = req.params.leadId;
 
   try {
     const lead = await Lead.findByIdAndDelete(id);
