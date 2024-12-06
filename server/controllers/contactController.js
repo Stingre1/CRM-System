@@ -20,7 +20,7 @@ const getAllContacts = async (req, res) => {
 // @desc Get a contact by ID
 // @method GET api/contacts/:id
 const getContactById = async (req, res) => {
-  const { id } = req.params.id;
+  const id = req.params.id;
 
   try {
     const contact = await Contact.findById(id).populate('lead', 'leadName email');
@@ -72,13 +72,21 @@ const createContact = async (req, res) => {
 // @desc Update a contact
 // @method PUT api/contacts/:id
 const updateContact = async (req, res) => {
-  const { id } = req.params.id;
-  const { firstName, lastName, email, phoneNumber, notes } = req.body;
+  const id = req.params.id;
+  const updates = req.body;
 
   try {
+    const validFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'notes'];
+    const updateKeys = Objec.keys(updates);
+
+    //validate
+    if (!updateKeys.every(key => validFields.includes(key))) {
+      return res.status(400).json({ message: 'Invalid fields in request body' });
+    }
+
     const contact = await Contact.findByIdAndUpdate(
       id,
-      { firstName, lastName, email, phoneNumber, notes },
+      updates,
       { new: true, runValidators: true }
     );
 
@@ -101,7 +109,7 @@ const updateContact = async (req, res) => {
 // @desc Delete a contact
 // @method DELETE api/contacts/:id
 const deleteContact = async (req, res) => {
-  const { id } = req.params.id;
+  const id = req.params.id;
 
   try {
     const contact = await Contact.findByIdAndDelete(id);

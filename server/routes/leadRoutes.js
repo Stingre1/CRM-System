@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllLeads, getLeadById, createLead, updateLead, deleteLead, assignLead } from '../controllers/leadController.js';
+import { getAllLeads, getLeadById, createLead, updateLead, deleteLead, assignLead, searchLeads } from '../controllers/leadController.js';
 import authenticateJWT from '../middleware/authMiddleware.js';
 import authorizeRoles from '../middleware/authorizeRoles.js';
 
@@ -36,9 +36,15 @@ router.delete('/:leadId',
     deleteLead);
 
 // Assign lead to Sales Rep - Admin and Sales Manager can assign leads
-router.put('/:leadId/assign', 
+router.put('/assign/:leadId', 
     authenticateJWT, 
     authorizeRoles('Admin', 'Sales Manager'), 
     assignLead);
+
+router.get('/search?query=value',
+    authenticateJWT,
+    authorizeRoles('Admin', 'Sales Manager', 'Sales Rep'),
+    searchLeads);
+
 
 export default router;

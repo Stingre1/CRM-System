@@ -1,45 +1,38 @@
 import express from 'express';
-import { getAllUsers, getUserById, createUser, updateUser, deleteUser } from '../controllers/userController.js';
+import { getAllContacts, getContactById, createContact, updateContact, deleteContact } from '../controllers/contactController.js';
 import authenticateJWT from '../middleware/authMiddleware.js';
 import authorizeRoles from '../middleware/authorizeRoles.js';
 
 const router = express.Router();
 
-// Get all users 
-// Admin only
+// Get all contacts - Admin and Sales Manager can access
 router.get('/',
-    authenticateJWT,
-    authorizeRoles('Admin'),
-    getAllUsers);
+  authenticateJWT,
+  authorizeRoles('Admin', 'Sales Manager'),
+  getAllContacts);
 
-// Get user by ID
-// Admin can view all users
-// Sales Managers and Reps can view themselves
-router.get('/:userId', 
-    authenticateJWT, 
-    authorizeRoles('Admin', 'Sales Manager', 'Sales Rep'), 
-    getUserById);
+// Get contact by ID - Admin, Sales Manager, and the Sales Rep who owns the contact can access
+router.get('/:contactId', 
+  authenticateJWT,
+   authorizeRoles('Admin', 'Sales Manager', 'Sales Rep'), 
+   getContactById);
 
-// Create user
-//Admin only
+// Create contact - Admin and Sales Manager can access
 router.post('/', 
-    authenticateJWT, 
-    authorizeRoles('Admin'), 
-    createUser);
+  authenticateJWT, 
+  authorizeRoles('Admin', 'Sales Manager'), 
+  createContact);
 
-// Update user
-// Admin can update all
-// Sales Manager and Sales Rep can update their own profile
-router.put('/:userId', 
-    authenticateJWT, 
-    authorizeRoles('Admin', 'Sales Manager', 'Sales Rep'), 
-    updateUser);
+// Update contact - Admin and Sales Manager can access, Sales Rep can update their own contacts
+router.put('/:contactId', 
+  authenticateJWT, 
+  authorizeRoles('Admin', 'Sales Manager', 'Sales Rep'), 
+  updateContact);
 
-// Delete user
-// Admin can delete any user
-router.delete('/:userId', 
-    authenticateJWT, 
-    authorizeRoles('Admin'), 
-    deleteUser);
+// Delete contact - Admin and Sales Manager can access, Sales Rep can delete their own contacts
+router.delete('/:contactId', 
+  authenticateJWT, 
+  authorizeRoles('Admin', 'Sales Manager', 'Sales Rep'), 
+  deleteContact);
 
 export default router;

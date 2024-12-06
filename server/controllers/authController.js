@@ -3,7 +3,8 @@ import jwt from 'jsonwebtoken';
 import User from '../models/userModel.js';
 import dotenv from 'dotenv';
 
-dotenv.config({path: path.join(__dirname)});
+
+dotenv.config();
 
 const registerUser = async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -43,7 +44,7 @@ const login = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return res.status(400).json({ message: "Username/Email and Password fields are required."});
+    return res.status(400).json({ message: "Email and Password fields are required."});
   }
 
   try {
@@ -60,8 +61,9 @@ const login = async (req, res) => {
 
     const token = jwt.sign(
       {
-         id: user._id,
-          email: user.email
+        id: user._id,
+        email: user.email,
+        role: user.role
       },
       process.env.JWT_SECRET_KEY,
       { expiresIn: '1h' }

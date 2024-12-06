@@ -21,7 +21,7 @@ const getAllLeads = async (req, res) => {
 // @desc Get a lead by ID
 // @method GET api/leads/:id
 const getLeadById = async (req, res) => {
-  const { id } = req.params.id;
+  const id = req.params.id;
 
   try {
     const lead = await Lead.findById(id);
@@ -44,7 +44,7 @@ const getLeadById = async (req, res) => {
 // @method POST api/leads
 const createLead = async (req, res) => {
   const { leadName, phoneNumber, email, leadDetails } = req.body;
-
+  console.log(leadName, phoneNumber, email, leadDetails);
   try {
     const lead = new Lead({
       leadName,
@@ -69,13 +69,21 @@ const createLead = async (req, res) => {
 // @desc Update a lead's details
 // @method PUT api/leads/:id
 const updateLead = async (req, res) => {
-  const { id } = req.params.id;
-  const { leadName, phoneNumber, email, leadDetails, status } = req.body;
+  const id = req.params.id;
+  const updates = req.body;
 
   try {
+    const validFields = ['leadName', 'phoneNumber', 'email', 'leadDetails', 'status'];
+    const updateKeys = Object.keys(updates); // gets just the keys
+
+    //validate
+    if (!updateKeys.every(key => validFields.includes(key))) {
+      return res.status(400).json({ message: 'Invalid fields in request body' });
+  }
+
     const lead = await Lead.findByIdAndUpdate(
       id,
-      { leadName, phoneNumber, email, leadDetails, status },
+      updates,
       { new: true, runValidators: true } // Return the updated document and validate
     );
 
@@ -84,10 +92,10 @@ const updateLead = async (req, res) => {
     }
 
     res.status(200).json({
-      message: 'Lead updated successfully.',
-      lead,
+      message: `Lead ${lead.leadName} updated successfully.`
     });
   } catch (err) {
+
     console.error(err);
     res.status(500).json({
       message: 'Internal server error. Could not update lead.',
@@ -98,7 +106,7 @@ const updateLead = async (req, res) => {
 // @desc Delete a lead
 // @method DELETE api/leads/:id
 const deleteLead = async (req, res) => {
-  const { id } = req.params.id;
+  const id = req.params.id;
 
   try {
     const lead = await Lead.findByIdAndDelete(id);
@@ -118,9 +126,9 @@ const deleteLead = async (req, res) => {
 };
 
 // @desc Assign a lead to a sales representative
-// @method PUT api/leads/:leadId/assign
+// @method PUT api/leads/assign/:leadId/
 const assignLead = async (req, res) => {
-  const { leadId } = req.params.assign;
+  const leadId = req.params.leadId;
   const { salesRepId } = req.body;
 
   try {
@@ -150,7 +158,7 @@ const assignLead = async (req, res) => {
 // @desc Search leads by a query (e.g., name, email, status)
 // @method GET api/leads/search?query=value
 const searchLeads = async (req, res) => {
-  const { query } = req.query;
+  const query = req.query;
 
   try {
     const leads = await Lead.find({

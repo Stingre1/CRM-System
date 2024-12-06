@@ -39,9 +39,9 @@ app.use('/api/auth', authRoutes);
 
 // Protected Routes (auth required)
 
-app.use('/api/users', userRoutes);
-app.use('/api/leads', authenticateJWT, authorizeRoles, leadRoutes); 
-app.use('/api/contacts', authenticateJWT, authorizeRoles, contactRoutes);
+app.use('/api/users', authenticateJWT, userRoutes);
+app.use('/api/leads', authenticateJWT, leadRoutes); 
+app.use('/api/contacts', authenticateJWT, contactRoutes);
 
 // Start the server
 app.listen(port, () => {
