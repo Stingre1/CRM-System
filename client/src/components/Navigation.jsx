@@ -1,6 +1,7 @@
 import { Navbar, Nav, Container, Button } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { isAuthenticated, getUserRole, removeToken } from '../utils/auth';
+const currentPath = window.location.pathname;
 
 function Navigation() {
   const navigate = useNavigate();
@@ -11,6 +12,12 @@ function Navigation() {
     removeToken();
     navigate('/login');
   };
+
+  // if(authenticated && currentPath == '/login') {
+  //   // navigate('/');
+  //   removeToken();
+  //   return null;
+  // }
 
   if (!authenticated) return null;
 
@@ -23,7 +30,7 @@ function Navigation() {
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
             <Nav.Link as={Link} to="/leads">Leads</Nav.Link>
-            <Nav.Link as={Link} to="/contacts">Contacts</Nav.Link>
+            <Nav.Link as={Link} to="/contacts">Contacts</Nav.Link>  
             {userRole === 'admin' && (
               <Nav.Link as={Link} to="/users">Users</Nav.Link>
             )}

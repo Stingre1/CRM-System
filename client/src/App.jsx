@@ -10,15 +10,28 @@ import ContactManagement from './pages/ContactManagement';
 import UserManagement from './pages/UserManagement';
 import Reports from './pages/Reports';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { isAuthenticated } from './utils/auth';
+
+
 
 function App() {
   return (
     <Router>
       <Navigation />
-      <Container className="py-4">
+      <Container className="py-4 d-flex justify-content-center align-items-center">
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          {/* for when we wanna make our entry point the Homepage */}
+          {/* <Route path="/" element={<Homepage />} /> */}
+          {/* rn we're starting at the login page */}
+          
+          <Route path="/login" element={
+              <Login />
+          } />
+          
+          <Route path="/register" element={
+              <Register />
+          } />
+          
           
           <Route path="/" element={
             <PrivateRoute>

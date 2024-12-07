@@ -13,6 +13,27 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+body { }
+
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+
+.loginAndRegister {
+  justify-content: center;
+  align-items: center;
+}
+
+.register {
+  justify-content: center;
+  align-items: center;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -54,7 +75,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
   :root {
     color: #213547;
     background-color: #ffffff;

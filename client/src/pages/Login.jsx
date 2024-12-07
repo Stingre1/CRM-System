@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Form, Button, Card, Alert, Spinner } from 'react-bootstrap';
 import { useNavigate, Link } from 'react-router-dom';
-import { setToken } from '../utils/auth';
+import { removeToken, setToken } from '../utils/auth';
 import { authAPI } from '../services/api';
 
 function Login() {
+  removeToken();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,7 +22,7 @@ function Login() {
       setToken(data.token);
       navigate('/');
     } catch (err) {
-      console.log(`error: ${err}`);
+      // console.log(`error: ${err}`);
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
