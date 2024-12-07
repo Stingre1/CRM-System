@@ -24,6 +24,41 @@ const getUserById = async (req, res) => {
   }
 };
 
+const createUser = async (req, res) => {
+  const { name, email, password, role } = req.body;
+
+  console.log(req.body)
+
+  // Validation
+  if (!name || !email || !password || !role) {
+    return res.status(400).json({ message: `All fields are required.` });
+  }
+
+  try {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already exists." });
+    }
+
+    const saltRounds = 10;
+    const hashedPass = await bcrypt.hash(password, saltRounds);
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPass,
+      role,
+    });
+
+    await newUser.save();
+
+    res.status(201).json({ message: 'User created successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 
 const editUser = async (req, res) => {
   const id = req.params.userId;
@@ -84,4 +119,4 @@ const deleteUser = async (req, res) => {
 
 
 
-export { getAllUsers, getUserById, deleteUser, editUser };
+export { getAllUsers, getUserById, createUser, deleteUser, editUser };

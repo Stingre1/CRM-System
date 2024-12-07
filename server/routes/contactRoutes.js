@@ -4,7 +4,7 @@ import authenticateJWT from '../middleware/authMiddleware.js';
 import authorizeRoles from '../middleware/authorizeRoles.js';
 
 const router = express.Router();
-
+//api/contacts/
 // Get all contacts - Admin and Sales Manager can access
 router.get('/',
   authenticateJWT,

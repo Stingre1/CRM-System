@@ -10,7 +10,7 @@ router.get(
   '/',
   authenticateJWT,
   authorizeRoles('Admin', 'Sales Manager', 'Sales Rep'),
-  getReports // Controller function
+  getReports 
 );
 
 export default router;

@@ -39,9 +39,9 @@ export const hasPermission = (requiredRole) => {
   if (!userRole) return false;
 
   const roleHierarchy = {
-    'admin': ['admin', 'manager', 'sales'],
-    'manager': ['manager', 'sales'],
-    'sales': ['sales']
+    'Admin': ['Admin', 'Sales Manager', 'Sales Rep'],
+    'Sales Manager': ['Sales Manager', 'Sales Rep'],
+    'Sales Rep': ['Sales Rep']
   };
 
   return roleHierarchy[userRole]?.includes(requiredRole) || false;

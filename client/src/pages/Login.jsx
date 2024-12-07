@@ -21,6 +21,7 @@ function Login() {
       setToken(data.token);
       navigate('/');
     } catch (err) {
+      console.log(`error: ${err}`);
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);

@@ -4,7 +4,7 @@ import authenticateJWT from '../middleware/authMiddleware.js';
 import authorizeRoles from '../middleware/authorizeRoles.js';
 
 const router = express.Router();
-
+//api/leads
 // Get all leads Admin and Sales Manager can access
 router.get('/', 
     authenticateJWT, 
@@ -41,6 +41,7 @@ router.put('/assign/:leadId',
     authorizeRoles('Admin', 'Sales Manager'), 
     assignLead);
 
+//serach Lead
 router.get('/search?query=value',
     authenticateJWT,
     authorizeRoles('Admin', 'Sales Manager', 'Sales Rep'),

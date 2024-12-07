@@ -14,12 +14,13 @@ function Register() {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  
   const navigate = useNavigate();
 
   const roles = [
-    { value: 'admin', label: 'Admin' },
-    { value: 'manager', label: 'Sales Manager' },
-    { value: 'sales', label: 'Sales Rep' }
+    { value: 'Admin', label: 'Admin' },
+    { value: 'Sales Manager', label: 'Sales Manager' },
+    { value: 'Sales Rep', label: 'Sales Rep' }
   ];
 
   const handleChange = (e) => {

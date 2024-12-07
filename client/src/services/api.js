@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { getToken } from '../utils/auth';
+import { assignLead, searchLeads } from '../../../server/controllers/leadController';
+import { getReports } from '../../../server/controllers/reportController';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5050/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -58,6 +60,10 @@ export const leadsAPI = {
     const response = await api.get('/leads');
     return response.data;
   },
+  getLead: async (id) => {
+    const response = await api.get(`/leads/${id}`);
+    return response.data;
+  },
   createLead: async (leadData) => {
     const response = await api.post('/leads', leadData);
     return response.data;
@@ -70,11 +76,30 @@ export const leadsAPI = {
     const response = await api.delete(`/leads/${id}`);
     return response.data;
   },
+  assignLead: async (id, leadData) => {
+    const response = await api.put(`/leads/assign/${id}`, leadData);
+    return response.data;
+  },
+  searchLead: async (queryValue) => {
+    const response = await api.get(`leads/search?query=${queryValue}`);
+    return response.data;
+  }
+};
+
+export const reportsAPI = {
+  getReports: async (queryValue) => {
+    const response = await api.get(`leads/search?query=${queryValue}`);
+    return response.data;
+  }
 };
 
 export const usersAPI = {
   getUsers: async () => {
     const response = await api.get('/users');
+    return response.data;
+  },
+  getUsers: async (id) => {
+    const response = await api.get(`/users/${id}`);
     return response.data;
   },
   createUser: async (userData) => {
