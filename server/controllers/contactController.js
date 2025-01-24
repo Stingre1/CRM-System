@@ -3,8 +3,18 @@ import Contact from '../models/contactModel.js';
 // @desc Get all contacts
 // @method GET api/contacts
 const getAllContacts = async (req, res) => {
+  const userId = req.user._id;
   try {
-    const contacts = await Contact.find().populate('lead', 'leadName email');
+    let contacts;
+
+    // If the user is a Sales Rep, only show their own contacts
+    if (req.user.role === 'Sales Rep') {
+      contacts = await Contact.find({ salesRep: userId }).populate('lead', 'leadName email');
+    } else {
+      // Admins and Sales Managers can see all contacts
+      contacts = await Contact.find().populate('lead', 'leadName email');
+    }
+
     res.status(200).json({
       message: 'Contacts fetched successfully.',
       contacts,
@@ -21,11 +31,17 @@ const getAllContacts = async (req, res) => {
 // @method GET api/contacts/:id
 const getContactById = async (req, res) => {
   const id = req.params.id;
+  const userId = req.user._id;
 
   try {
     const contact = await Contact.findById(id).populate('lead', 'leadName email');
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found.' });
+    }
+
+    // If the user is a Sales Rep, check if they own the contact
+    if (req.user.role === 'Sales Rep' && contact.salesRep.toString() !== userId.toString()) {
+      return res.status(403).json({ message: 'You can only access your own contacts.' });
     }
 
     res.status(200).json({
@@ -43,7 +59,12 @@ const getContactById = async (req, res) => {
 // @desc Create a new contact
 // @method POST api/contacts
 const createContact = async (req, res) => {
-  const { firstName, lastName, email, phoneNumber, lead, notes } = req.body;
+  const { firstName, lastName, email, phoneNumber, lead, notes, salesRep } = req.body;
+
+  // Only Admins and Sales Managers can create contacts
+  if (req.user.role !== 'Admin' && req.user.role !== 'Sales Manager') {
+    return res.status(403).json({ message: 'You are not authorized to create a contact.' });
+  }
 
   try {
     const contact = new Contact({
@@ -53,6 +74,7 @@ const createContact = async (req, res) => {
       phoneNumber,
       lead,
       notes,
+      salesRep, // Assigning salesRep as part of the contact creation
     });
 
     await contact.save();
@@ -74,29 +96,34 @@ const createContact = async (req, res) => {
 const updateContact = async (req, res) => {
   const id = req.params.id;
   const updates = req.body;
+  const userId = req.user._id;
 
   try {
     const validFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'notes'];
-    const updateKeys = Objec.keys(updates);
+    const updateKeys = Object.keys(updates);
 
-    //validate
+    // Validate fields
     if (!updateKeys.every(key => validFields.includes(key))) {
       return res.status(400).json({ message: 'Invalid fields in request body' });
     }
 
-    const contact = await Contact.findByIdAndUpdate(
-      id,
-      updates,
-      { new: true, runValidators: true }
-    );
+    const contact = await Contact.findById(id);
 
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found.' });
     }
 
+    // Check if the logged-in user is the owner or if they are an Admin/Sales Manager
+    if (req.user.role === 'Sales Rep' && contact.salesRep.toString() !== userId.toString()) {
+      return res.status(403).json({ message: 'You can only update your own contacts.' });
+    }
+
+    // Proceed with the update
+    const updatedContact = await Contact.findByIdAndUpdate(id, updates, { new: true, runValidators: true });
+
     res.status(200).json({
       message: 'Contact updated successfully.',
-      contact,
+      contact: updatedContact,
     });
   } catch (err) {
     console.error(err);
@@ -110,12 +137,21 @@ const updateContact = async (req, res) => {
 // @method DELETE api/contacts/:id
 const deleteContact = async (req, res) => {
   const id = req.params.id;
+  const userId = req.user._id;
 
   try {
-    const contact = await Contact.findByIdAndDelete(id);
+    const contact = await Contact.findById(id);
+
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found.' });
     }
+
+    // Check if the logged-in user is the owner or if they are an Admin/Sales Manager
+    if (req.user.role === 'Sales Rep' && contact.salesRep.toString() !== userId.toString()) {
+      return res.status(403).json({ message: 'You can only delete your own contacts.' });
+    }
+
+    await Contact.findByIdAndDelete(id);
 
     res.status(200).json({
       message: 'Contact deleted successfully.',

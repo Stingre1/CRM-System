@@ -8,7 +8,7 @@ const router = express.Router();
 // Get all contacts - Admin and Sales Manager can access
 router.get('/',
   authenticateJWT,
-  authorizeRoles('Admin', 'Sales Manager'),
+  authorizeRoles('Admin', 'Sales Manager', 'Sales Rep'),
   getAllContacts);
 
 // Get contact by ID - Admin, Sales Manager, and the Sales Rep who owns the contact can access

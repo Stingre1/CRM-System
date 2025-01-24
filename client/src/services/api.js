@@ -114,6 +114,11 @@ export const usersAPI = {
     const response = await api.delete(`/users/${id}`);
     return response.data;
   },
+  // Fetch sales reps
+  getSalesReps: async () => {
+    const response = await api.get('/users/salesReps');
+    return response.data;
+  },
 };
 
 export default api;

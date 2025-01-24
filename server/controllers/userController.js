@@ -10,6 +10,23 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// Get all sales reps
+export const getSalesReps = async (req, res) => {
+  try {
+    
+    const salesReps = await User.find({ role: 'Sales Rep' });
+    // console.log(salesReps);
+    if (!salesReps || salesReps.length === 0) {
+      return res.status(404).json({ message: 'No sales reps found' });
+    }
+
+    res.status(200).json(salesReps);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Failed to load sales reps' });
+  }
+};
+
 // Get a user by ID
 const getUserById = async (req, res) => {
   const { id } = req.params.id; // Extract the ID from the request parameters

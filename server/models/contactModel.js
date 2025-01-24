@@ -28,11 +28,16 @@ const contactSchema = new mongoose.Schema(
     lead: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Lead', // Reference to the lead this contact belongs to
-      required: true,
+      required: false,
     },
     notes: {
       type: String, // Additional notes about the contact
     },
+    salesRep: { 
+      type: mongoose.Schema.Types.ObjectId, 
+      ref: 'User', 
+      required: true 
+    }, // Store the sales rep's ID here
   },
   {
     timestamps: true, // Automatically manage createdAt and updatedAt fields

@@ -8,7 +8,7 @@ const router = express.Router();
 // Get all leads Admin and Sales Manager can access
 router.get('/', 
     authenticateJWT, 
-    authorizeRoles('Admin', 'Sales Manager'), 
+    authorizeRoles('Admin', 'Sales Manager', 'Sales Rep'), 
     getAllLeads);
 
 // Get lead by ID - Admin, Sales Manager, and the Sales Rep who owns the lead can access

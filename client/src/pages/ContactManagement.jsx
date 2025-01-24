@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Alert } from 'react-bootstrap';
-import { contactsAPI } from '../services/api';
+import { contactsAPI, leadsAPI, usersAPI } from '../services/api';
 
 function ContactManagement() {
   const [contacts, setContacts] = useState([]);
+  const [salesReps, setSalesReps] = useState([]); // Add state to store Sales Reps
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -12,25 +13,45 @@ function ContactManagement() {
     firstName: '',
     lastName: '',
     email: '',
-    phone: '',
+    phoneNumber: '',
     company: '',
     title: '',
-    notes: ''
+    notes: '',
+    lead: '',
+    salesRep: '', // Added salesRep to form data
   });
 
   useEffect(() => {
     loadContacts();
+    loadSalesReps(); // Fetch Sales Reps when the component loads
   }, []);
 
   const loadContacts = async () => {
     try {
       setLoading(true);
       const data = await contactsAPI.getContacts();
-      setContacts(data);
+      // console.log(data);
+      if (Array.isArray(data.contacts)) {
+        setContacts(data.contacts);
+      } else {
+        throw new Error('Contacts data is not an array');
+      }    
     } catch (err) {
+      console.log(`Error: ${err}`)
       setError('Failed to load contacts');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadSalesReps = async () => {
+    try {
+      const data = await usersAPI.getSalesReps(); // Assuming this API call fetches sales reps
+      // console.log(data);
+      setSalesReps(data);
+    } catch (err) {
+      console.log(`${err}`);
+      setError('Failed to load Sales Reps');
     }
   };
 
@@ -41,10 +62,12 @@ function ContactManagement() {
         firstName: contact.firstName,
         lastName: contact.lastName,
         email: contact.email,
-        phone: contact.phone,
+        phoneNumber: contact.phoneNumber,
         company: contact.company,
         title: contact.title,
-        notes: contact.notes
+        notes: contact.notes,
+        lead: contact.lead ? contact.lead._id : '',
+        salesRep: contact.salesRep ? contact.salesRep._id : '', // If updating, assign salesRep
       });
     } else {
       setSelectedContact(null);
@@ -52,10 +75,12 @@ function ContactManagement() {
         firstName: '',
         lastName: '',
         email: '',
-        phone: '',
+        phoneNumber: '',
         company: '',
         title: '',
-        notes: ''
+        notes: '',
+        lead: '',
+        salesRep: '', // Make sure salesRep is empty when creating a new contact
       });
     }
     setShowModal(true);
@@ -141,7 +166,7 @@ function ContactManagement() {
               <tr key={contact.id}>
                 <td>{`${contact.firstName} ${contact.lastName}`}</td>
                 <td>{contact.email}</td>
-                <td>{contact.phone}</td>
+                <td>{contact.phoneNumber}</td>
                 <td>{contact.company}</td>
                 <td>{contact.title}</td>
                 <td>
@@ -197,73 +222,47 @@ function ContactManagement() {
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
-                    required
                   />
                 </Form.Group>
               </div>
             </div>
 
-            <div className="row">
-              <div className="col-md-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
-              </div>
-              <div className="col-md-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Phone</Form.Label>
-                  <Form.Control
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-              </div>
-            </div>
+            {/* Other form fields for email, phone, company, etc. */}
 
-            <div className="row">
-              <div className="col-md-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Company</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-              </div>
-              <div className="col-md-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Title</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-              </div>
-            </div>
-
+            {/* Add Lead Dropdown */}
             <Form.Group className="mb-3">
-              <Form.Label>Notes</Form.Label>
+              <Form.Label>Lead</Form.Label>
               <Form.Control
-                as="textarea"
-                rows={3}
-                name="notes"
-                value={formData.notes}
+                as="select"
+                name="lead"
+                value={formData.lead}
                 onChange={handleChange}
-              />
+                required
+              >
+                <option value="">Select Lead</option>
+                {/* Populate with lead options */}
+              </Form.Control>
             </Form.Group>
+
+            {/* Add Sales Rep Dropdown */}
+            <Form.Group className="mb-3">
+              <Form.Label>Sales Rep</Form.Label>
+              <Form.Control
+                as="select"
+                name="salesRep"
+                value={formData.salesRep}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Sales Rep</option>
+                {salesReps.map((rep) => (
+                  <option key={rep._id} value={rep._id}>
+                    {rep.name} {/* Adjust as per your Sales Rep structure */}
+                  </option>
+                ))}
+              </Form.Control>
+            </Form.Group>
+
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleCloseModal}>
