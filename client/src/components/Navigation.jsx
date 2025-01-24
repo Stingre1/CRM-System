@@ -30,11 +30,12 @@ function Navigation() {
           <Nav className="me-auto">
             <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
             <Nav.Link as={Link} to="/leads">Leads</Nav.Link>
-            <Nav.Link as={Link} to="/contacts">Contacts</Nav.Link>  
-            {userRole === 'admin' && (
+            <Nav.Link as={Link} to="/contacts">Contacts</Nav.Link>
+            {userRole === 'Admin' && (
               <Nav.Link as={Link} to="/users">Users</Nav.Link>
             )}
-            {(userRole === 'admin' || userRole === 'manager') && (
+            {(userRole === 'Admin' || userRole === 'Sales Manager') && (
+              
               <Nav.Link as={Link} to="/reports">Reports</Nav.Link>
             )}
           </Nav>

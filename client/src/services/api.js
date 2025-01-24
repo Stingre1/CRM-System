@@ -98,7 +98,7 @@ export const usersAPI = {
     const response = await api.get('/users');
     return response.data;
   },
-  getUsers: async (id) => {
+  getUser: async (id) => {
     const response = await api.get(`/users/${id}`);
     return response.data;
   },
