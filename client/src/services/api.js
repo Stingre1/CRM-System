@@ -119,6 +119,11 @@ export const usersAPI = {
     const response = await api.get('/users/salesReps');
     return response.data;
   },
+
+  getMe: async () => {
+    const response = await api.get('/users/me');
+    return response.data;
+  },
 };
 
 export default api;

@@ -3,8 +3,10 @@ import { Table, Button, Modal, Form, Alert } from 'react-bootstrap';
 import { contactsAPI, leadsAPI, usersAPI } from '../services/api';
 
 function ContactManagement() {
+  const [currentUser, setCurrentUser] = useState(null); // Initialize state for current user
   const [contacts, setContacts] = useState([]);
-  const [salesReps, setSalesReps] = useState([]); // Add state to store Sales Reps
+  const [leads, setLeads] = useState([]);
+  const [salesReps, setSalesReps] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -18,39 +20,52 @@ function ContactManagement() {
     title: '',
     notes: '',
     lead: '',
-    salesRep: '', // Added salesRep to form data
+    salesRep: '',
   });
 
   useEffect(() => {
     loadContacts();
-    loadSalesReps(); // Fetch Sales Reps when the component loads
+    loadCurrentUser();
+    loadLeads();
+    loadSalesReps();
   }, []);
+
+  const loadCurrentUser = async () => {
+    try {
+      const userData = await usersAPI.getMe(); // Fetch current user data
+      setCurrentUser(userData || {}); // Set the current user in state
+    } catch (err) {
+      setError('Failed to load current user');
+    }
+  };
 
   const loadContacts = async () => {
     try {
       setLoading(true);
       const data = await contactsAPI.getContacts();
-      // console.log(data);
-      if (Array.isArray(data.contacts)) {
-        setContacts(data.contacts);
-      } else {
-        throw new Error('Contacts data is not an array');
-      }    
+      setContacts(data.contacts || []);
     } catch (err) {
-      console.log(`Error: ${err}`)
       setError('Failed to load contacts');
     } finally {
       setLoading(false);
     }
   };
 
+  const loadLeads = async () => {
+    try {
+      const data = await leadsAPI.getLeads();
+      console.log("Leads: ",data.leads);
+      setLeads(data.leads || []);
+    } catch (err) {
+      setError('Failed to load leads');
+    }
+  };
+
   const loadSalesReps = async () => {
     try {
-      const data = await usersAPI.getSalesReps(); // Assuming this API call fetches sales reps
-      // console.log(data);
+      const data = await usersAPI.getSalesReps();
       setSalesReps(data);
     } catch (err) {
-      console.log(`${err}`);
       setError('Failed to load Sales Reps');
     }
   };
@@ -63,11 +78,9 @@ function ContactManagement() {
         lastName: contact.lastName,
         email: contact.email,
         phoneNumber: contact.phoneNumber,
-        company: contact.company,
-        title: contact.title,
         notes: contact.notes,
         lead: contact.lead ? contact.lead._id : '',
-        salesRep: contact.salesRep ? contact.salesRep._id : '', // If updating, assign salesRep
+        salesRep: contact.salesRep ? contact.salesRep._id : '',
       });
     } else {
       setSelectedContact(null);
@@ -76,11 +89,9 @@ function ContactManagement() {
         lastName: '',
         email: '',
         phoneNumber: '',
-        company: '',
-        title: '',
         notes: '',
         lead: '',
-        salesRep: '', // Make sure salesRep is empty when creating a new contact
+        salesRep: '',
       });
     }
     setShowModal(true);
@@ -91,24 +102,88 @@ function ContactManagement() {
     setError('');
   };
 
+  // const handleChange = (e) => {
+    
+  //   const updatedFormData = {
+  //     ...formData,
+  //     lead: formData.lead ? formData.lead.id : null,
+  //     salesRep: formData.salesRep ? formData.salesRep : null,
+  //   };
+  //   setFormData({
+  //     updatedFormData,
+  //     [e.target.name]: e.target.value,
+  //   });
+  // };
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+  
+    if (name === 'lead') {
+      // Find the selected lead by id
+      const selectedLead = leads.find((lead) => lead.id === value);
+      console.log(selectedLead);
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: selectedLead ? selectedLead._id : '', // Store the ObjectId
+      }));
+    } else if (name === 'salesRep') {
+      // Find the selected salesRep by id
+      const selectedRep = salesReps.find((rep) => rep.id === value);
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: selectedRep ? selectedRep._id : '', // Store the ObjectId
+      }));
+    } else {
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    }
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setError('');
+  //   setLoading(true);
+
+  //   try {
+  //     if (selectedContact) {
+  //       await contactsAPI.updateContact(selectedContact.id, formData);
+  //     } else {
+  //       await contactsAPI.createContact(formData);
+  //     }
+  //     await loadContacts();
+  //     handleCloseModal();
+  //   } catch (err) {
+  //     setError(err.response?.data?.message || 'Failed to save contact');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-
+  
     try {
+      // Prepare form data for submission (with ObjectId for lead and salesRep)
+      const formDataForSubmit = {
+        ...formData,
+        lead: formData.lead || null, // Make sure to send ObjectId
+        salesRep: formData.salesRep || null, // Make sure to send ObjectId
+      };
+
+      console.log("formdataforsubmit: ", formDataForSubmit);
+  
       if (selectedContact) {
-        await contactsAPI.updateContact(selectedContact.id, formData);
+        // Update existing contact
+        await contactsAPI.updateContact(selectedContact.id, formDataForSubmit);
       } else {
-        await contactsAPI.createContact(formData);
+        // Create new contact
+        await contactsAPI.createContact(formDataForSubmit);
       }
+  
       await loadContacts();
       handleCloseModal();
     } catch (err) {
@@ -118,161 +193,160 @@ function ContactManagement() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this contact?')) {
-      try {
-        setLoading(true);
-        await contactsAPI.deleteContact(id);
-        await loadContacts();
-      } catch (err) {
-        setError('Failed to delete contact');
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
+  if (!currentUser) {
+    return <div>Loading...</div>; // Show a loading indicator until current user data is available
+  }
 
+
+  
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1>Contact Management</h1>
-        <Button variant="primary" onClick={() => handleShowModal()}>
+      <h1>Contact Management</h1>
+
+      {currentUser.role !== 'SalesRep' && ( // Restrict "Add Contact" to Admins/Sales Managers
+        <Button onClick={() => handleShowModal()} disabled={loading}>
           Add New Contact
         </Button>
-      </div>
+      )}
 
-      {error && <Alert variant="danger" className="mb-4">{error}</Alert>}
-
-      <Table striped bordered hover responsive>
+      <Table striped bordered hover>
         <thead>
           <tr>
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
             <th>Company</th>
-            <th>Title</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {contacts.length === 0 ? (
-            <tr>
-              <td colSpan="6" className="text-center">
-                {loading ? 'Loading contacts...' : 'No contacts found'}
+          {contacts.map((contact) => (
+            <tr key={contact.id}>
+              <td>{`${contact.firstName} ${contact.lastName}`}</td>
+              <td>{contact.email}</td>
+              <td>{contact.phoneNumber}</td>
+              <td>{contact.company}</td>
+              <td>
+                <Button
+                  variant="warning"
+                  onClick={() => handleShowModal(contact)}
+                  disabled={loading || currentUser.role === 'Sales Rep'} // Prevent Sales Reps from editing
+                >
+                  Edit
+                </Button>
               </td>
             </tr>
-          ) : (
-            contacts.map((contact) => (
-              <tr key={contact.id}>
-                <td>{`${contact.firstName} ${contact.lastName}`}</td>
-                <td>{contact.email}</td>
-                <td>{contact.phoneNumber}</td>
-                <td>{contact.company}</td>
-                <td>{contact.title}</td>
-                <td>
-                  <Button
-                    variant="outline-primary"
-                    size="sm"
-                    className="me-2"
-                    onClick={() => handleShowModal(contact)}
-                  >
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline-danger"
-                    size="sm"
-                    onClick={() => handleDelete(contact.id)}
-                  >
-                    Delete
-                  </Button>
-                </td>
-              </tr>
-            ))
-          )}
+          ))}
         </tbody>
       </Table>
 
-      <Modal show={showModal} onHide={handleCloseModal} size="lg">
+      <Modal show={showModal} onHide={handleCloseModal}>
         <Modal.Header closeButton>
-          <Modal.Title>
-            {selectedContact ? 'Edit Contact' : 'Add New Contact'}
-          </Modal.Title>
+          <Modal.Title>{selectedContact ? 'Edit Contact' : 'Add New Contact'}</Modal.Title>
         </Modal.Header>
-        <Form onSubmit={handleSubmit}>
-          <Modal.Body>
-            {error && <Alert variant="danger">{error}</Alert>}
-            <div className="row">
-              <div className="col-md-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>First Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="firstName"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                  />
-                </Form.Group>
-              </div>
-              <div className="col-md-6">
-                <Form.Group className="mb-3">
-                  <Form.Label>Last Name</Form.Label>
-                  <Form.Control
-                    type="text"
-                    name="lastName"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                  />
-                </Form.Group>
-              </div>
-            </div>
+        <Modal.Body>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form onSubmit={handleSubmit}>
+            {/* First Name */}
+            <Form.Group>
+              <Form.Label>First Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-            {/* Other form fields for email, phone, company, etc. */}
+            {/* Last Name */}
+            <Form.Group>
+              <Form.Label>Last Name</Form.Label>
+              <Form.Control
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
 
-            {/* Add Lead Dropdown */}
-            <Form.Group className="mb-3">
+            {/* Email */}
+            <Form.Group>
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+
+            {/* Phone Number */}
+            <Form.Group>
+              <Form.Label>Phone Number</Form.Label>
+              <Form.Control
+                type="text"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+
+            {/* Lead Dropdown */}
+            <Form.Group>
               <Form.Label>Lead</Form.Label>
               <Form.Control
                 as="select"
                 name="lead"
                 value={formData.lead}
                 onChange={handleChange}
-                required
               >
                 <option value="">Select Lead</option>
-                {/* Populate with lead options */}
+                {leads.map((lead) => (
+                  <option key={lead.id} value={lead.id}>
+                    {lead.name}
+                  </option>
+                ))}
               </Form.Control>
             </Form.Group>
 
-            {/* Add Sales Rep Dropdown */}
-            <Form.Group className="mb-3">
+            {/* Sales Rep Dropdown */}
+            <Form.Group>
               <Form.Label>Sales Rep</Form.Label>
               <Form.Control
                 as="select"
                 name="salesRep"
                 value={formData.salesRep}
                 onChange={handleChange}
-                required
               >
                 <option value="">Select Sales Rep</option>
                 {salesReps.map((rep) => (
-                  <option key={rep._id} value={rep._id}>
-                    {rep.name} {/* Adjust as per your Sales Rep structure */}
+                  <option key={rep.id} value={rep.id}>
+                    {rep.name}
                   </option>
                 ))}
               </Form.Control>
             </Form.Group>
 
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Cancel
+            {/* Notes */}
+            <Form.Group>
+              <Form.Label>Notes</Form.Label>
+              <Form.Control
+                as="textarea"
+                name="notes"
+                value={formData.notes}
+                onChange={handleChange}
+              />
+            </Form.Group>
+
+            <Button type="submit" disabled={loading}>
+              {selectedContact ? 'Update' : 'Create'}
             </Button>
-            <Button variant="primary" type="submit" disabled={loading}>
-              {loading ? 'Saving...' : 'Save Contact'}
-            </Button>
-          </Modal.Footer>
-        </Form>
+          </Form>
+        </Modal.Body>
       </Modal>
     </div>
   );
