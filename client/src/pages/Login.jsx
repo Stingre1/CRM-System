@@ -19,8 +19,6 @@ function Login() {
     setError('');
     setIsLoading(true);
 
-    // console.log("MONGO URI: ", MONGO_URI);  
-
     try {
       const data = await authAPI.login({ email, password });
       setToken(data.token);

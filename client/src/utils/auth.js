@@ -44,5 +44,7 @@ export const hasPermission = (requiredRole) => {
     'Sales Rep': ['Sales Rep']
   };
 
+  
+
   return roleHierarchy[userRole]?.includes(requiredRole) || false;
 };

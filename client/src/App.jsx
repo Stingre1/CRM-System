@@ -53,13 +53,13 @@ function App() {
           } />
           
           <Route path="/users" element={
-            <PrivateRoute requiredRole="admin">
+            <PrivateRoute requiredRole="Admin">
               <UserManagement />
             </PrivateRoute>
           } />
           
           <Route path="/reports" element={
-            <PrivateRoute requiredRole="manager">
+            <PrivateRoute requiredRole="Sales Manager">
               <Reports />
             </PrivateRoute>
           } />

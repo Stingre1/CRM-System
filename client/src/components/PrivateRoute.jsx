@@ -2,6 +2,7 @@ import { Navigate } from 'react-router-dom';
 import { isAuthenticated, hasPermission } from '../utils/auth';
 
 const PrivateRoute = ({ children, requiredRole }) => {
+  console.log(`Private Route:\nchildren: ${children}\nrequiredRole: ${requiredRole}`);
   const authenticated = isAuthenticated();
   const hasAccess = requiredRole ? hasPermission(requiredRole) : true;
 
