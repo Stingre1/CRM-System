@@ -16,6 +16,7 @@ import { isAuthenticated } from './utils/auth';
 
 function App() {
   return (
+    
     <Router>
       <Navigation />
       <Container className="py-4 d-flex justify-content-center align-items-center">

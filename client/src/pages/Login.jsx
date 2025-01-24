@@ -12,17 +12,21 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
+
+    // console.log("MONGO URI: ", MONGO_URI);  
 
     try {
       const data = await authAPI.login({ email, password });
       setToken(data.token);
       navigate('/');
     } catch (err) {
-      // console.log(`error: ${err}`);
+      console.log(`error: ${err}`);
       setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setIsLoading(false);
