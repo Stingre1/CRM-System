@@ -1,5 +1,5 @@
 import express from 'express';
-import {getAllUsers, getUserById, editUser, deleteUser, createUser, getSalesReps } from '../controllers/userController.js';
+import {getAllUsers, getUserById, editUser, deleteUser, createUser, getMe, getSalesReps } from '../controllers/userController.js';
 import authenticateJWT from '../middleware/authMiddleware.js';
 import authorizeRoles from '../middleware/authorizeRoles.js';
 
@@ -12,6 +12,13 @@ router.get(
   authenticateJWT,
   authorizeRoles('Admin'),
   getAllUsers
+);
+
+router.get(
+  '/me',
+  authenticateJWT,
+  authorizeRoles('Admin', 'Sales Manager', 'SalesReps'),
+  getMe
 );
 
 router.get(

@@ -34,7 +34,9 @@ const getContactById = async (req, res) => {
   const userId = req.user._id;
 
   try {
+    console.log("Contact id from req: ", id);
     const contact = await Contact.findById(id).populate('lead', 'leadName email');
+    console.log("Contact: ", contact);
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found.' });
     }
@@ -94,12 +96,12 @@ const createContact = async (req, res) => {
 // @desc Update a contact
 // @method PUT api/contacts/:id
 const updateContact = async (req, res) => {
-  const id = req.params.id;
+  const id = req.params.contactId;
   const updates = req.body;
   const userId = req.user._id;
 
   try {
-    const validFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'notes'];
+    const validFields = ['firstName', 'lastName', 'email', 'phoneNumber', 'lead', 'salesRep', 'notes'];
     const updateKeys = Object.keys(updates);
 
     // Validate fields
@@ -107,8 +109,9 @@ const updateContact = async (req, res) => {
       return res.status(400).json({ message: 'Invalid fields in request body' });
     }
 
+    console.log("Contact in update contact from req:", id); 
     const contact = await Contact.findById(id);
-
+    console.log("Contact in update contact:", contact); 
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found.' });
     }

@@ -65,6 +65,7 @@ function ContactManagement() {
     try {
       const data = await usersAPI.getSalesReps();
       setSalesReps(data);
+      console.log("Sales Rep: ", data);
     } catch (err) {
       setError('Failed to load Sales Reps');
     }
@@ -72,6 +73,7 @@ function ContactManagement() {
 
   const handleShowModal = (contact = null) => {
     if (contact) {
+      console.log("Contact object being edited:", contact);
       setSelectedContact(contact);
       setFormData({
         firstName: contact.firstName,
@@ -80,8 +82,9 @@ function ContactManagement() {
         phoneNumber: contact.phoneNumber,
         notes: contact.notes,
         lead: contact.lead ? contact.lead._id : '',
-        salesRep: contact.salesRep ? contact.salesRep._id : '',
+        salesRep: contact.salesRep ? contact.salesRep : '',
       });
+      console.log("Form Data being set in handleShowModal:", formData); // ADD THIS LINE AFTER setFormData
     } else {
       setSelectedContact(null);
       setFormData({
@@ -102,88 +105,28 @@ function ContactManagement() {
     setError('');
   };
 
-  // const handleChange = (e) => {
-    
-  //   const updatedFormData = {
-  //     ...formData,
-  //     lead: formData.lead ? formData.lead.id : null,
-  //     salesRep: formData.salesRep ? formData.salesRep : null,
-  //   };
-  //   setFormData({
-  //     updatedFormData,
-  //     [e.target.name]: e.target.value,
-  //   });
-  // };
-
   const handleChange = (e) => {
-    const { name, value } = e.target;
-  
-    if (name === 'lead') {
-      // Find the selected lead by id
-      const selectedLead = leads.find((lead) => lead.id === value);
-      console.log(selectedLead);
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: selectedLead ? selectedLead._id : '', // Store the ObjectId
-      }));
-    } else if (name === 'salesRep') {
-      // Find the selected salesRep by id
-      const selectedRep = salesReps.find((rep) => rep.id === value);
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: selectedRep ? selectedRep._id : '', // Store the ObjectId
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [name]: value,
-      }));
-    }
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-  //   setError('');
-  //   setLoading(true);
 
-  //   try {
-  //     if (selectedContact) {
-  //       await contactsAPI.updateContact(selectedContact.id, formData);
-  //     } else {
-  //       await contactsAPI.createContact(formData);
-  //     }
-  //     await loadContacts();
-  //     handleCloseModal();
-  //   } catch (err) {
-  //     setError(err.response?.data?.message || 'Failed to save contact');
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
-  
-    try {
-      // Prepare form data for submission (with ObjectId for lead and salesRep)
-      const formDataForSubmit = {
-        ...formData,
-        lead: formData.lead || null, // Make sure to send ObjectId
-        salesRep: formData.salesRep || null, // Make sure to send ObjectId
-      };
 
-      console.log("formdataforsubmit: ", formDataForSubmit);
-  
-      if (selectedContact) {
-        // Update existing contact
-        await contactsAPI.updateContact(selectedContact.id, formDataForSubmit);
+    try {
+      if (selectedContact) { // Condition should still work if selectedContact is correctly set
+        // console.log("selectedContact:", selectedContact);
+        const contactIdToUpdate = selectedContact._id; // <--- Explicitly access _id from selectedContact state
+        console.log("Updating contact ID:", contactIdToUpdate); // Log the ID we are about to use
+        await contactsAPI.updateContact(contactIdToUpdate, formData); // Use contactIdToUpdate
       } else {
-        // Create new contact
-        await contactsAPI.createContact(formDataForSubmit);
+        await contactsAPI.createContact(formData);
       }
-  
       await loadContacts();
       handleCloseModal();
     } catch (err) {
@@ -192,6 +135,7 @@ function ContactManagement() {
       setLoading(false);
     }
   };
+  
 
   if (!currentUser) {
     return <div>Loading...</div>; // Show a loading indicator until current user data is available
@@ -221,7 +165,7 @@ function ContactManagement() {
         </thead>
         <tbody>
           {contacts.map((contact) => (
-            <tr key={contact.id}>
+            <tr key={contact._id}>
               <td>{`${contact.firstName} ${contact.lastName}`}</td>
               <td>{contact.email}</td>
               <td>{contact.phoneNumber}</td>
@@ -306,8 +250,8 @@ function ContactManagement() {
               >
                 <option value="">Select Lead</option>
                 {leads.map((lead) => (
-                  <option key={lead.id} value={lead.id}>
-                    {lead.name}
+                  <option key={lead._id} value={lead._id}> {/* Use lead._id for key and value */}
+                    {lead.leadName} {/* Use lead.leadName to display the lead name */}
                   </option>
                 ))}
               </Form.Control>
@@ -324,7 +268,7 @@ function ContactManagement() {
               >
                 <option value="">Select Sales Rep</option>
                 {salesReps.map((rep) => (
-                  <option key={rep.id} value={rep.id}>
+                  <option key={rep._id} value={rep._id}>
                     {rep.name}
                   </option>
                 ))}

@@ -1,4 +1,33 @@
 import User from '../models/userModel.js';
+import jwt from 'jsonwebtoken';
+
+
+// Get current user details
+export const getMe = async (req, res) => {
+  try {
+    // Extract the token from the Authorization header
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized: Token missing' });
+    }
+
+    // Decode the token 
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    const userId = decoded.id;
+
+    // Find the user by ID and exclude the password field
+    const user = await User.findById(userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Return user details
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
 
 // Get all users
 const getAllUsers = async (req, res) => {
