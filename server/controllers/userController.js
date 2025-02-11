@@ -21,6 +21,8 @@ export const getMe = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
+    // console.log("Me: ", user);
+
     // Return user details
     res.status(200).json(user);
   } catch (error) {
@@ -44,7 +46,9 @@ export const getSalesReps = async (req, res) => {
   try {
     
     const salesReps = await User.find({ role: 'Sales Rep' });
-    // console.log(salesReps);
+    
+    // console.log("Sales reps: ", salesReps);
+
     if (!salesReps || salesReps.length === 0) {
       return res.status(404).json({ message: 'No sales reps found' });
     }

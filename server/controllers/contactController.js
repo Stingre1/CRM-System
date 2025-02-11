@@ -9,10 +9,14 @@ const getAllContacts = async (req, res) => {
 
     // If the user is a Sales Rep, only show their own contacts
     if (req.user.role === 'Sales Rep') {
-      contacts = await Contact.find({ salesRep: userId }).populate('lead', 'leadName email');
+      contacts = await Contact.find({ salesRep: userId })
+      .populate('lead', 'leadName email')
+      .populate('salesRep', 'name'); 
     } else {
       // Admins and Sales Managers can see all contacts
-      contacts = await Contact.find().populate('lead', 'leadName email');
+      contacts = await Contact.find()
+      .populate('lead', 'leadName email')
+      .populate('salesRep', 'name'); 
     }
 
     res.status(200).json({
@@ -35,7 +39,9 @@ const getContactById = async (req, res) => {
 
   try {
     console.log("Contact id from req: ", id);
-    const contact = await Contact.findById(id).populate('lead', 'leadName email');
+    const contact = await Contact.findById(id)
+      .populate('lead', 'leadName email')
+      .populate('salesRep', 'name');
     console.log("Contact: ", contact);
     if (!contact) {
       return res.status(404).json({ message: 'Contact not found.' });

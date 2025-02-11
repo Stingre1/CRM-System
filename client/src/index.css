@@ -13,7 +13,6 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body { }
 
 
 html, body, #root {
@@ -86,4 +85,15 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+/* LeadManagement.jsx */
+.addNewLeadButton {
+  flex-shrink: 0; /* CSS rule for the class */
+  /* You can add other styles here as well, if needed */
+}
+
+.addNewLeadButton {
+  flex-shrink: 0; /* CSS rule for the class */
+  /* You can add other styles here as well, if needed */
 }

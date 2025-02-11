@@ -4,12 +4,15 @@ import { contactsAPI, leadsAPI, usersAPI } from '../services/api';
 
 function ContactManagement() {
   const [currentUser, setCurrentUser] = useState(null); // Initialize state for current user
+
   const [contacts, setContacts] = useState([]);
   const [leads, setLeads] = useState([]);
   const [salesReps, setSalesReps] = useState([]);
+
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
   const [selectedContact, setSelectedContact] = useState(null);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -122,7 +125,7 @@ function ContactManagement() {
       if (selectedContact) { // Condition should still work if selectedContact is correctly set
         // console.log("selectedContact:", selectedContact);
         const contactIdToUpdate = selectedContact._id; // <--- Explicitly access _id from selectedContact state
-        console.log("Updating contact ID:", contactIdToUpdate); // Log the ID we are about to use
+        // console.log("Updating contact ID:", contactIdToUpdate); // Log the ID we are about to use
         await contactsAPI.updateContact(contactIdToUpdate, formData); // Use contactIdToUpdate
       } else {
         await contactsAPI.createContact(formData);
@@ -145,13 +148,17 @@ function ContactManagement() {
   
   return (
     <div>
-      <h1>Contact Management</h1>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+      <h1 style={{ marginRight: '20px'}}>Contact Management</h1>
 
-      {currentUser.role !== 'SalesRep' && ( // Restrict "Add Contact" to Admins/Sales Managers
-        <Button onClick={() => handleShowModal()} disabled={loading}>
-          Add New Contact
-        </Button>
-      )}
+        <div style={{ flexGrow: 1 }}></div>
+
+        {currentUser && currentUser.role !== 'SalesRep' && (
+          <Button onClick={() => handleShowModal()} className='addNewLeadButton' disabled={loading}>
+            Add New Contact
+          </Button>
+        )}
+      </div>
 
       <Table striped bordered hover>
         <thead>
@@ -159,7 +166,10 @@ function ContactManagement() {
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Company</th>
+            <th>Lead</th> {/* Keep Lead Column */}
+            {currentUser.role !== 'SalesRep' && ( // Conditionally render Sales Rep header
+              <th>Sales Rep</th>
+            )}
             <th>Actions</th>
           </tr>
         </thead>
@@ -169,12 +179,15 @@ function ContactManagement() {
               <td>{`${contact.firstName} ${contact.lastName}`}</td>
               <td>{contact.email}</td>
               <td>{contact.phoneNumber}</td>
-              <td>{contact.company}</td>
+              <td>{contact.lead && contact.lead.leadName}</td> {/* Display Lead Name */}
+              {currentUser.role !== 'SalesRep' && ( // Conditionally render Sales Rep column
+                  <td>{contact.salesRep && contact.salesRep.name ? contact.salesRep.name : 'N/A'}</td>
+              )}
               <td>
                 <Button
                   variant="warning"
                   onClick={() => handleShowModal(contact)}
-                  disabled={loading || currentUser.role === 'Sales Rep'} // Prevent Sales Reps from editing
+                  disabled={loading || currentUser.role === 'Sales Rep'}
                 >
                   Edit
                 </Button>

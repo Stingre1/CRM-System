@@ -5,7 +5,23 @@ import User from '../models/userModel.js';
 // @method GET api/leads
 const getAllLeads = async (req, res) => {
   try {
-    const leads = await Lead.find();
+    console.log("getAllLeads - User Role:", req.user.role);
+    console.log("getAllLeads - User ID:", req.user._id);
+
+    let query = Lead.find().populate('assignedTo', 'name');
+    console.log("getAllLeads - Mongoose Query (before execution):", query.getQuery());
+    if (req.user.role === 'Sales Rep') {
+      console.log("getAllLeads - SalesRep Role DETECTED. Applying filter.");
+      query = query.where('assignedTo').equals(req.user._id); // <--- Simplified filter using .where() only
+    } else {
+      console.log("getAllLeads - Admin/SalesManager Role. No filtering applied.");
+    }
+
+    console.log("getAllLeads - Mongoose Query (before execution):", query.getQuery());
+
+    const leads = await query.exec();
+    console.log("getAllLeads - Number of leads returned:", leads.length);
+
     res.status(200).json({
       message: 'Leads fetched successfully.',
       leads,
@@ -43,13 +59,14 @@ const getLeadById = async (req, res) => {
 // @desc Create a new lead
 // @method POST api/leads/
 const createLead = async (req, res) => {
-  const { leadName, phoneNumber, email, leadDetails } = req.body;
+  const { leadName, phoneNumber, email, status, leadDetails } = req.body;
   // console.log(`${leadName}, ${phoneNumber}, ${email}, ${leadDetails}`);
   try {
     const lead = new Lead({
       leadName,
       phoneNumber,
       email,
+      status,
       leadDetails,
     });
 
@@ -74,7 +91,7 @@ const updateLead = async (req, res) => {
   const updates = req.body;
 
   try {
-    const validFields = ['leadName', 'phoneNumber', 'email', 'leadDetails', 'status'];
+    const validFields = ['leadName', 'phoneNumber', 'email', 'status', 'leadDetails', 'assignedTo'];
     const updateKeys = Object.keys(updates); // gets just the keys
 
     //validate
