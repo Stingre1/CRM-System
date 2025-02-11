@@ -1,5 +1,6 @@
 import User from '../models/userModel.js';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcrypt';
 
 
 // Get current user details
@@ -35,6 +36,7 @@ export const getMe = async (req, res) => {
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find(); // Retrieve all users from the database
+    // console.log(users);
     res.status(200).json(users); // Send the users as a JSON response
   } catch (error) {
     res.status(500).json({ message: 'Error fetching users', error: error.message });
@@ -77,7 +79,7 @@ const getUserById = async (req, res) => {
 const createUser = async (req, res) => {
   const { name, email, password, role } = req.body;
 
-  console.log(req.body)
+  // console.log(req.body)
 
   // Validation
   if (!name || !email || !password || !role) {
@@ -114,11 +116,12 @@ const editUser = async (req, res) => {
   const id = req.params.userId;
   const updates = req.body;
 
-  console.log(id);
+  console.log(`Updating user with ID: ${id}`); // Log user ID being updated
+  console.log("Updates received:", updates); // Log the updates received
 
   try {
-      // Step 1: Validate the fields in the request body
-      const validFields = ['name', 'email', 'role'];
+      // Step 1: Validate the fields in the request body (Include 'password' now)
+      const validFields = ['name', 'email', 'role', 'password']; // <--- ADD 'password' to valid fields
       const updateKeys = Object.keys(updates);
 
       if (!updateKeys.every(key => validFields.includes(key))) {
@@ -133,7 +136,17 @@ const editUser = async (req, res) => {
           }
       }
 
-      // Step 3: Update the user
+      // Step 3: Handle Password Update (Conditionally Hash and Update) <--- NEW PASSWORD HANDLING LOGIC
+      if (updates.password) { // <--- Check if a new password is provided in updates
+          const hashedPassword = await bcrypt.hash(updates.password, 10); // Hash the new password
+          updates.password = hashedPassword; // Replace plain text password with hashed password in updates object
+          console.log("Password updated and hashed."); // Log password hashing
+      } else {
+          console.log("Password not updated (field was empty or not provided)."); // Log if password not updated
+      }
+
+
+      // Step 4: Update the user (using the potentially modified 'updates' object with hashed password)
       const updatedUser = await User.findByIdAndUpdate(id, updates, {
           new: true,
           runValidators: true,
@@ -143,17 +156,19 @@ const editUser = async (req, res) => {
           return res.status(404).json({ message: 'User not found' });
       }
 
-      res.status(200).json(`User ${updatedUser.name} updated successfully. `);
+      console.log(`User ${updatedUser.name} updated successfully.`); // Log successful update
+      res.status(200).json({ message: `User ${updatedUser.name} updated successfully. ` }); // Send success response with message
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
+      console.error("Error updating user:", error); // Enhanced error logging
+      res.status(500).json({ message: 'Internal server error', error: error.message }); // Include error message in response for better debugging
   }
 };
 
+
 // Delete User
 const deleteUser = async (req, res) => {
-  const { userId } = req.params.userId;
-
+  const userId = req.params.userId;
+  
   try {
     const user = await User.findByIdAndDelete(userId);
     if (!user) {

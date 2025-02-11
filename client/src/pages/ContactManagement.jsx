@@ -167,7 +167,7 @@ function ContactManagement() {
             <th>Email</th>
             <th>Phone</th>
             <th>Lead</th> {/* Keep Lead Column */}
-            {currentUser.role !== 'SalesRep' && ( // Conditionally render Sales Rep header
+            {currentUser.role !== 'Sales Rep' && ( // Conditionally render Sales Rep header
               <th>Sales Rep</th>
             )}
             <th>Actions</th>
@@ -180,7 +180,7 @@ function ContactManagement() {
               <td>{contact.email}</td>
               <td>{contact.phoneNumber}</td>
               <td>{contact.lead && contact.lead.leadName}</td> {/* Display Lead Name */}
-              {currentUser.role !== 'SalesRep' && ( // Conditionally render Sales Rep column
+              {currentUser.role !== 'Sales Rep' && ( // Conditionally render Sales Rep column
                   <td>{contact.salesRep && contact.salesRep.name ? contact.salesRep.name : 'N/A'}</td>
               )}
               <td>

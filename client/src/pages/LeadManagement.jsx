@@ -149,7 +149,7 @@ function LeadManagement() {
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1 style={{ marginRight: '20px'}}>Lead Management</h1>
-        {currentUser && currentUser.role !== 'SalesRep' && (
+        {currentUser && currentUser.role !== 'Sales Rep' && (
           <Button onClick={() => handleShowModal()} className='addNewLeadButton' disabled={loading}>
             Add New Lead
           </Button>

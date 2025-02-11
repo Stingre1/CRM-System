@@ -20,8 +20,18 @@ const userSchema = new mongoose.Schema({
     },
     password: {
       type: String,
-      required: [true, 'Password is required.'],
-      minlength: [8, 'Password must be at least 8 characters.'],
+      required: [
+        function() { // Conditional required validator
+          return this.isNew; // Password is required only when creating a *new* user
+        },
+        'Password is required.'
+      ],
+      // minlength: [ // <--- Make 'minlength' also conditional - array for validators
+      //   function() {
+      //     return typeof this.password === 'string' && this.password.length > 0; // Check if password is a non-empty string
+      //   },
+      //   'Password must be at least 8 characters.'
+      // ],
     },
     role: {
       type: String,

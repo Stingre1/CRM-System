@@ -47,7 +47,7 @@ router.post(
 
 // Edit an existing user (Admin only)
 router.put(
-  '/edit/:userId',
+  '/:userId',
   authenticateJWT,
   authorizeRoles('Admin'),
   editUser
@@ -55,7 +55,7 @@ router.put(
 
 // Delete a user (Admin only)
 router.delete(
-  '/delete/:userId',
+  '/:userId',
   authenticateJWT,
   authorizeRoles('Admin'),
   deleteUser
