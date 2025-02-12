@@ -1,0 +1,65 @@
+[
+  {
+    firstName: "Fiona",
+    lastName: "Gallagher",
+    email: "fiona.gallagher@example.com",
+    phoneNumber: "555-123-4567",
+    lead: "LEAD_OBJECT_ID_1", // Replace with actual Lead ObjectId from your DB
+    salesRep: "SALES_REP_OBJECT_ID_1", // Replace with actual Sales Rep User ObjectId from your DB
+    notes: "	"
+  },
+  {
+    firstName: "Leslie",
+    lastName: "Knope",
+    email: "leslie.knope@pawneegov.org",
+    phoneNumber: "555-987-6543",
+    lead: "LEAD_OBJECT_ID_2", // Replace with actual Lead ObjectId from your DB
+    salesRep: "SALES_REP_OBJECT_ID_2", // Replace with actual Sales Rep User ObjectId from your DB
+    notes: "Enthusiastic and community-focused. Potential for long-term engagement. Needs information on community partnership programs."
+  },
+  {
+    firstName: "Ron",
+    lastName: "Swanson",
+    email: "ron.swanson@verygoodbuildingco.com",
+    phoneNumber: "555-246-8012",
+    lead: "LEAD_OBJECT_ID_3", // Replace with actual Lead ObjectId from your DB
+    salesRep: "SALES_REP_OBJECT_ID_3", // Replace with actual Sales Rep User ObjectId from your DB
+    notes: "Minimalist in communication.  Appears to value efficiency and self-reliance.  May be interested in basic service packages."
+  },
+  {
+    firstName: "Eleanor",
+    lastName: "Shellstrop",
+    email: "eleanor.shellstrop@azizrestaurant.com",
+    phoneNumber: "555-135-7911",
+    lead: "LEAD_OBJECT_ID_4", // Replace with actual Lead ObjectId from your DB
+    salesRep: "SALES_REP_OBJECT_ID_1", // Example - Assigned to Sales Rep 1
+    notes: "Initially skeptical, but warming up to the idea.  Send case studies highlighting ethical business practices. Follow-up call scheduled."
+  },
+  {
+    firstName: "Jeff",
+    lastName: "Winger",
+    email: "jeff.winger@greendale.edu",
+    phoneNumber: "555-369-1212",
+    lead: "LEAD_OBJECT_ID_5", // Replace with actual Lead ObjectId from your DB
+    salesRep: "SALES_REP_OBJECT_ID_2", // Example - Assigned to Sales Rep 2
+    notes: "Negotiation skills seem strong.  Focused on value and return on investment.  Present a compelling ROI analysis."
+  },
+  {
+    firstName: "Kimmy",
+    lastName: "Schmidt",
+    email: "kimmy.schmidt@examplemail.com",
+    phoneNumber: "555-800-5555",
+    lead: "LEAD_OBJECT_ID_6", // Replace with actual Lead ObjectId from your DB
+    salesRep: "SALES_REP_OBJECT_ID_3", // Example - Assigned to Sales Rep 3
+    notes: "Very positive and enthusiastic.  Interested in a wide range of services.  Send a detailed brochure and schedule a demo."
+  },
+  {
+    firstName: "Michael",
+    lastName: "Scott", // Okay, okay, I snuck one in, but let's pretend it's from a different show ;)
+    email: "michael.scott@dundermifflinpaper.com", // Made it up - Dunder Mifflin is okay though, right?
+    phoneNumber: "555-111-0001",
+    lead: "LEAD_OBJECT_ID_7", // Replace with actual Lead ObjectId from your DB
+    salesRep: "SALES_REP_OBJECT_ID_1", // Example - Back to Sales Rep 1
+    notes: "Eager to please and build relationships. Needs a clear and simple explanation of benefits.  Emphasize the 'people person' aspect of our services."
+  }
+]

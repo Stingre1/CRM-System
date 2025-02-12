@@ -34,10 +34,10 @@ function Navigation() {
             {userRole === 'Admin' && (
               <Nav.Link as={Link} to="/users">Users</Nav.Link>
             )}
-            {(userRole === 'Admin' || userRole === 'Sales Manager') && (
+            {/* {(userRole === 'Admin' || userRole === 'Sales Manager') && (
               
               <Nav.Link as={Link} to="/reports">Reports</Nav.Link>
-            )}
+            )} */}
           </Nav>
           <Button variant="outline-light" onClick={handleLogout}>
             Logout
